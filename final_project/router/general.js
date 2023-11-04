@@ -29,12 +29,11 @@ public_users.get('/author/:author',function (req, res) {
   const author = req.params.author;
   const arraybooks = Object.keys(books);
   console.log(arraybooks);
-  console.log(author);
 
   arraybooks.forEach((key, index)=>{
     //   console.log(key)
       if(books[key].author === author){
-          res.send(JSON.stringify(books[key],null,10));
+          res.send(books[key],null,10);
       }
     //    else{
     //     return res.status(300).json({message: "Can't find author with such a name"});
@@ -47,12 +46,19 @@ public_users.get('/author/:author',function (req, res) {
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+ const title = req.params.title;
+ const arraybooks = Object.keys(books);
+ arraybooks.forEach((key,index)=>{
+     if(books[key].title === title)
+     res.send(books[key],null,10);
+ })
 });
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
   //Write your code here
+  const isbn_number = req.params.isbn;
+  res.send(books[isbn_number].reviews);
   return res.status(300).json({message: "Yet to be implemented"});
 });
 
