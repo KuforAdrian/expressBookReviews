@@ -20,7 +20,6 @@ const authenticatedUser = (username,password)=>{ //returns boolean
     } else {
         return false;
     }
-
 }
 
 //only registered users can login
@@ -36,7 +35,7 @@ regd_users.post("/login", (req,res) => {
   if(authenticatedUser(username,password)){
         let accessToken = jwt.sign({
             data: password
-        }, 'access', {expiresIn: 60});
+        }, 'access', {expiresIn: 180 * 5});
 
         req.session.authorization = {
             accessToken, username
@@ -51,7 +50,41 @@ regd_users.post("/login", (req,res) => {
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  const isbn_number = req.params.isbn;
+  const username = req.session.authorization.username;
+  const review = req.query.review;
+
+  console.log(req.session);
+  console.log(username);
+  console.log(req.session.password);
+
+
+  /*if (!username) {
+    return res.status(401).json({ error: 'Unauthorized. Please log in.' });
+  }*/
+
+  if (!isbn || !review) {
+    return res.status(400).json({ error: 'ISBN and review are required.' });
+  }
+
+  // Check if the book exists
+  if (!books[isbn]) {
+    return res.status(404).json({ error: 'Book not found.' });
+  }
+
+  if(books[isbn_number].reviews && books[isbn].reviews[username]) {
+       // Modify existing review
+    books[isbn].reviews[username] = review;
+    res.json({ message: 'Review modified successfully.' });
+  }else{
+    // Add a new review
+        if (!books[isbn].reviews) {
+        books[isbn].reviews = {};
+        }
+
+        books[isbn].reviews[username] = review;
+        res.json({ message: 'Review added successfully.' });
+  }
 });
 
 module.exports.authenticated = regd_users;
